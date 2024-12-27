@@ -39,7 +39,7 @@ else
 		UNAME_P := $(shell uname -p)
 		var := $(shell which $(CC) | xargs file)
 		ifeq ($(lastword $(var)),arm64)
-		  CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -fopenmp -m64 -std=c++11
+		  CFLAGS := -march=$(ARCH) -O3 -fomit-frame-pointer -fopenmp -m64 -std=c++11 -Wno-deprecated-declarations
 		endif
 	endif
 endif
@@ -77,7 +77,7 @@ name:
 	@echo "Executable name is" $(PROGRAM_NAME)
 	@echo ""
 
-multiruns: main-multiruns.cpp $(ALL_OBJECTS)
+multiruns: main_multiruns.cpp $(ALL_OBJECTS)
 	$(COMPILE_COMMAND) -o project_multiruns $(CORE_OBJECTS) custom_modules/custom_multiruns.cpp main_multiruns.cpp 
 	echo project_multiruns
 
