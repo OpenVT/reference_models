@@ -98,12 +98,12 @@ int main( int argc, char* argv[] )
 	double migration_bias = 0.9; 
 
     std::cout << "-------- argc= " << argc << std::endl;
-    if (argc < 3)
+    if (argc < 4)
     {
-        std::cout << "Usage: " << argv[0] << " <config file>  <num_runs>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <config file>  <num_runs> <migration_bias>" << std::endl << std::endl;
         exit(-1);
     }
-	if( argc > 1 )
+	else
 	{
 		XML_status = load_PhysiCell_config_file( argv[1] ); 
 		sprintf( copy_command , "cp %s %s" , argv[1] , PhysiCell_settings.folder.c_str() ); 
@@ -221,6 +221,11 @@ int main( int argc, char* argv[] )
     std::vector<double> yvals;
     // int num_runs = 8;
     // num_runs = 2;
+
+	std::ofstream tracks_file("pc_combined_tracks.csv");
+    std::string csv_header = "Time,cellID,x,y";
+    tracks_file << csv_header << std::endl;
+
 	try 
 	{
         int idx_xy = 0;
@@ -288,6 +293,8 @@ int main( int argc, char* argv[] )
                 // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
                 xvals.push_back(((*all_cells)[0]->position[0]));
                 yvals.push_back(((*all_cells)[0]->position[1]));
+
+                tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] << std::endl;
 			}
 
 			// update the microenvironment
@@ -316,6 +323,8 @@ int main( int argc, char* argv[] )
             }
 		}
 		}
+
+        tracks_file.close();
 
         xvals.push_back(PhysiCell_globals.current_time);
         yvals.push_back(PhysiCell_globals.current_time);
