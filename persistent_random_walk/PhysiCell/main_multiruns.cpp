@@ -231,98 +231,99 @@ int main( int argc, char* argv[] )
         int idx_xy = 0;
         for (int irun=0; irun<num_runs; irun++)
         {
+            PhysiCell_globals.current_time = 0.0;   // reset the clock
             std::cout << "\n\n-------------------------- doing irun= " << irun << std::endl;
-	    SeedRandom();    // rwh: use clock for PRNG seed
-		PhysiCell_globals.current_time = 0.0;
-		PhysiCell_globals.next_full_save_time = PhysiCell_settings.SVG_save_interval;  // from .xml
-		PhysiCell_globals.next_SVG_save_time = PhysiCell_settings.SVG_save_interval;  // from .xml
+            SeedRandom();    // rwh: use clock for PRNG seed
+            PhysiCell_globals.current_time = 0.0;
+            PhysiCell_globals.next_full_save_time = PhysiCell_settings.SVG_save_interval;  // from .xml
+            PhysiCell_globals.next_SVG_save_time = PhysiCell_settings.SVG_save_interval;  // from .xml
 
-        // ---- Needs to match that below!
-        next_mech_save_time = PhysiCell::mechanics_dt;
-        // next_mech_save_time = 30.0;
-        // next_mech_save_time = PhysiCell_settings.SVG_save_interval;
-        (*all_cells)[0]->position[0] = 50.0;
-        (*all_cells)[0]->position[1] = 0.0;
-            std::cout << "    reset cell pos= " << (*all_cells)[0]->position[0] << ", " << (*all_cells)[0]->position[1] << std::endl;
+            // ---- Needs to match that below!
+            next_mech_save_time = PhysiCell::mechanics_dt;
+            // next_mech_save_time = 30.0;
+            // next_mech_save_time = PhysiCell_settings.SVG_save_interval;
+            (*all_cells)[0]->position[0] = 50.0;
+            (*all_cells)[0]->position[1] = 0.0;
+                std::cout << "    reset cell pos= " << (*all_cells)[0]->position[0] << ", " << (*all_cells)[0]->position[1] << std::endl;
 
-		while( PhysiCell_globals.current_time < PhysiCell_settings.max_time + 0.1*diffusion_dt )
-		{
-			// save data if it's time. 
-			if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_full_save_time ) < 0.01 * diffusion_dt )
-			{
-				// display_simulation_status( std::cout ); 
-				if( PhysiCell_settings.enable_legacy_saves == true )
-				{	
-					log_output( PhysiCell_globals.current_time , PhysiCell_globals.full_output_index, microenvironment, report_file);
-				}
-				
-				if( PhysiCell_settings.enable_full_saves == true )
-				{	
-					sprintf( filename , "%s/output%08u" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index ); 
-					
-					save_PhysiCell_to_MultiCellDS_v2( filename , microenvironment , PhysiCell_globals.current_time ); 
-				}
-				
-				PhysiCell_globals.full_output_index++; 
-				PhysiCell_globals.next_full_save_time += PhysiCell_settings.full_save_interval;
-			}
-			
-			// save SVG plot if it's time
-			if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_SVG_save_time  ) < 0.01 * diffusion_dt )
-			{
-				if( PhysiCell_settings.enable_SVG_saves == true )
-				{	
-					sprintf( filename , "%s/snapshot%08u.svg" , PhysiCell_settings.folder.c_str() , PhysiCell_globals.SVG_output_index );
-					SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function, substrate_coloring_function);
-
-					PhysiCell_globals.SVG_output_index++; 
-					PhysiCell_globals.next_SVG_save_time  += PhysiCell_settings.SVG_save_interval;
-				}
-			}
-
-            // rwh: custom for single cell persistence migration
-			if( fabs( PhysiCell_globals.current_time - next_mech_save_time  ) < 0.01 * diffusion_dt )
-			{
-                // std::cout << "--- x = " << (*all_cells)[0]->position[0] << std::endl;
-                next_mech_save_time  += PhysiCell::mechanics_dt;
-                // next_mech_save_time  += PhysiCell_settings.SVG_save_interval;
-                // next_mech_save_time  += PhysiCell_globals.next_SVG_save_time;
-                // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << std::endl;
-
-                idx_xy++;
-                // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
-                xvals.push_back(((*all_cells)[0]->position[0]));
-                yvals.push_back(((*all_cells)[0]->position[1]));
-
-                tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] << std::endl;
-			}
-
-			// update the microenvironment
-			// microenvironment.simulate_diffusion_decay( diffusion_dt );  //rwh
-			
-			// run PhysiCell 
-			((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
-			
-			/*
-			  Custom add-ons could potentially go here. 
-			*/
-			
-			PhysiCell_globals.current_time += diffusion_dt;
-
-            if ((*all_cells)[0]->position[0] > max_x)
+            while( PhysiCell_globals.current_time < PhysiCell_settings.max_time + 0.1*diffusion_dt )
             {
-                // exit(-1);
-                // std::cout << (*all_cells)[0]->position[0] << " > max_x =" <<max_x<< " ; break!!!\n";
-                xvals.push_back(-99.0);
-                yvals.push_back(-99.0);
-                // std::cout << "main -- insert -99s: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
+                // save data if it's time. 
+                if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_full_save_time ) < 0.01 * diffusion_dt )
+                {
+                    // display_simulation_status( std::cout ); 
+                    if( PhysiCell_settings.enable_legacy_saves == true )
+                    {	
+                        log_output( PhysiCell_globals.current_time , PhysiCell_globals.full_output_index, microenvironment, report_file);
+                    }
+                    
+                    if( PhysiCell_settings.enable_full_saves == true )
+                    {	
+                        sprintf( filename , "%s/output%08u" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index ); 
+                        
+                        save_PhysiCell_to_MultiCellDS_v2( filename , microenvironment , PhysiCell_globals.current_time ); 
+                    }
+                    
+                    PhysiCell_globals.full_output_index++; 
+                    PhysiCell_globals.next_full_save_time += PhysiCell_settings.full_save_interval;
+                }
+                
+                // save SVG plot if it's time
+                if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_SVG_save_time  ) < 0.01 * diffusion_dt )
+                {
+                    if( PhysiCell_settings.enable_SVG_saves == true )
+                    {	
+                        sprintf( filename , "%s/snapshot%08u.svg" , PhysiCell_settings.folder.c_str() , PhysiCell_globals.SVG_output_index );
+                        SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function, substrate_coloring_function);
 
-                (*all_cells)[0]->get_container()->last_mechanics_time = 0.0;
+                        PhysiCell_globals.SVG_output_index++; 
+                        PhysiCell_globals.next_SVG_save_time  += PhysiCell_settings.SVG_save_interval;
+                    }
+                }
 
-                break;
+                // rwh: custom for single cell persistence migration
+                if( fabs( PhysiCell_globals.current_time - next_mech_save_time  ) < 0.01 * diffusion_dt )
+                {
+                    // std::cout << "--- x = " << (*all_cells)[0]->position[0] << std::endl;
+                    next_mech_save_time  += PhysiCell::mechanics_dt;
+                    // next_mech_save_time  += PhysiCell_settings.SVG_save_interval;
+                    // next_mech_save_time  += PhysiCell_globals.next_SVG_save_time;
+                    // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << std::endl;
+
+                    idx_xy++;
+                    // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
+                    xvals.push_back(((*all_cells)[0]->position[0]));
+                    yvals.push_back(((*all_cells)[0]->position[1]));
+
+                    tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] << std::endl;
+                }
+
+                // update the microenvironment
+                // microenvironment.simulate_diffusion_decay( diffusion_dt );  //rwh
+                
+                // run PhysiCell 
+                ((Cell_Container *)microenvironment.agent_container)->update_all_cells( PhysiCell_globals.current_time );
+                
+                /*
+                Custom add-ons could potentially go here. 
+                */
+                
+                PhysiCell_globals.current_time += diffusion_dt;
+
+                if ((*all_cells)[0]->position[0] > max_x)
+                {
+                    // exit(-1);
+                    // std::cout << (*all_cells)[0]->position[0] << " > max_x =" <<max_x<< " ; break!!!\n";
+                    xvals.push_back(-99.0);
+                    yvals.push_back(-99.0);
+                    // std::cout << "main -- insert -99s: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
+
+                    (*all_cells)[0]->get_container()->last_mechanics_time = 0.0;
+
+                    break;
+                }
             }
-		}
-		}
+		}   // end irun loop
 
         tracks_file.close();
 
