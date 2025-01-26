@@ -364,7 +364,7 @@
 
     <cell_rules>
         <rulesets>
-            <ruleset protocol="CBHG" version="3.0" format="csv" enabled="true">
+            <ruleset protocol="CBHG" version="3.0" format="csv" enabled="false">
                 <folder>config</folder>
                 <filename>cells11_wall_rule.csv</filename>
             </ruleset>
