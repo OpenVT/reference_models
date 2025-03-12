@@ -1,0 +1,22 @@
+x,y,z,type,is_movable,volume,cycle entry,custom:GFP,custom:sample
+0.0,0.0,0.0,wall,0
+5,0.0,0.0,default,1
+10,0.0,0.0,default,1
+15,0.0,0.0,default,1
+20,0.0,0.0,default,1
+25,0.0,0.0,default,1
+30,0.0,0.0,default,1
+35,0.0,0.0,default,1
+40,0.0,0.0,default,1
+45,0.0,0.0,default,1
+50,0.0,0.0,default,1
+60,0.0,0.0,green,1
+70,0.0,0.0,green,1
+80,0.0,0.0,green,1
+90,0.0,0.0,green,1
+100,0.0,0.0,green,1
+110,0.0,0.0,green,1
+120,0.0,0.0,green,1
+130,0.0,0.0,green,1
+140,0.0,0.0,green,1
+150,0.0,0.0,green,1
