@@ -358,7 +358,7 @@
     <initial_conditions>
         <cell_positions type="csv" enabled="true">
             <folder>./config</folder>
-            <filename>equilib.csv</filename>
+            <filename>equilib_11cells.csv</filename>
         </cell_positions>
     </initial_conditions>
 
