@@ -193,6 +193,7 @@ ax0.set_ylim(5, 10)
 # plt.plot([625,950],[90,90],'--k')
 # plt.plot([625,950],[9,9],'--k')  # if scaled to "CD"
 plt.plot([0,5760],[9,9],'--k')  # if scaled to "CD"
+plt.plot([620,620],[0,10],'--k')  # if scaled to "CD"
 ax0.set_xlabel("Time (min)", fontsize=14)
 # ax0.set_ylabel("Cell center (microns)", fontsize=14)
 ax0.set_ylabel("Position (CD)", fontsize=14)
