@@ -87,8 +87,8 @@ array([[ 4900.  ,  4900.  ],
        [ 4960.75,  4148.02]])
 """
 
-# fig = plt.figure(figsize=(7,5))
-fig = plt.figure(figsize=(5,5))  # square
+fig = plt.figure(figsize=(7,5))
+# fig = plt.figure(figsize=(5,5))  # square
 ax0 = fig.gca()
 
 tvals = []
@@ -158,10 +158,6 @@ print("\nNOTE: click in plot window to give it focus before using keys.")
 max_idx = 25
 max_idx = 188
 max_idx = 938
-max_idx = 5761
-max_idx = 1009
-max_idx = 1153
-max_idx = 1440
 max_idx = 577
 for idx in range(0,max_idx):
     xml_file_root = "output%08d.xml" % idx
@@ -184,15 +180,8 @@ plt.plot(tvals,xpos,'-', markersize=4)
 # ax0.set_xlim(0.0, 60)
 # ax0.set_xlim(600, 950)
 # ax0.set_xlim(625, 950)
-#ax0.set_xlim(693, 5760)  # 4 days
-# ax0.set_xlim(1104, 10080)  # 7 days
-# ax0.set_xlim(1104, 11520)  # 8 days
-# ax0.set_xlim(1787, 14400)  # 10 days
-ax0.set_xlim(0, 5760)
-ax0.set_ylim(5, 10)
 # plt.plot([625,950],[90,90],'--k')
 # plt.plot([625,950],[9,9],'--k')  # if scaled to "CD"
-plt.plot([0,5760],[9,9],'--k')  # if scaled to "CD"
 ax0.set_xlabel("Time (min)", fontsize=14)
 # ax0.set_ylabel("Cell center (microns)", fontsize=14)
 ax0.set_ylabel("Position (CD)", fontsize=14)
