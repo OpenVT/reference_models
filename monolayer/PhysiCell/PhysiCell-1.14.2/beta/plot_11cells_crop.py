@@ -1,5 +1,9 @@
 # Examples (run from directory containing the .mat files):
-#  python plot_8cells.py
+#   - plot (time,xpos) of the right-most cell in the 11-cell mechanics test
+#
+#  At t=0, an immovable "wall" cell is at x=0 and the remaining 10 cells overlap by 1 radius width
+#  so that the right-most cell (ID=10) is at x=50. We let the cells relax (adhesion=0; repulsion varies)
+#  and plot the curve with the right-most cell reaches x=90.
 #
 
 import sys
@@ -47,31 +51,6 @@ show_nucleus = 0
 current_idx = 0
 axes_min = 0.0
 axes_max = 1000  
-
-
-# if (len(sys.argv) == 5):
-#   use_defaults = False
-#   kdx = 1
-#   show_nucleus = int(sys.argv[kdx])
-#   kdx += 1
-#   current_idx = int(sys.argv[kdx])
-#   kdx += 1
-#   axes_min = float(sys.argv[kdx])
-#   kdx += 1
-#   axes_max = float(sys.argv[kdx])
-# elif (len(sys.argv) != 1):
-#   print("Please provide either no args or 4 args:")
-#   usage_str = "show_nucleus start_index axes_min axes_max"
-#   print(usage_str)
-#   print("e.g.,")
-#   eg_str = "%s 0 0 0 2000" % (sys.argv[0])
-#   print(eg_str)
-#   sys.exit(1)
-
-#"""
-# print("axes_min=",axes_min)
-# print("axes_max=",axes_max)
-#"""
 
 current_idx = 0
 print("current_idx=",current_idx)
@@ -124,44 +103,17 @@ def get_cells_xpos():
 
     xpos.append(xvals/10)   # divide to get units of cell diam
     # print("xpos= ",xpos)
-
-    # plt.plot(tvals,xvals)
-
-        # else: 
-        #     self.cell_scalar_cbar_combobox.setEnabled(True)
-        #     self.discrete_variable = None   # memory leak??
-        #     self.discrete_variable_observed = set()
             
-    title_str = '11 horizontal cells mechanics test (PhysiCell)'
 
     axes_min = mcds.get_mesh()[0][0][0][0]
     axes_max = mcds.get_mesh()[0][0][-1][0]
 
-    # cbar2.ax.set_xlabel("pressure", fontsize=9)
+    # title_str = '11 horizontal cells mechanics test (PhysiCell)'
+    # ax0.set_title(title_str, fontsize=12)
 
-    ax0.set_title(title_str, fontsize=12)
-
-    # plot_xmin=plot_ymin= -500
-    # plot_xmax=plot_ymax= 500
-    # ax0.set_xlim(plot_xmin, plot_xmax)
-    # ax0.set_ylim(plot_ymin, plot_ymax)
-
-    # ax0.set_aspect('equal')
-
-    # plt.pause(0.001)  # rwh - yipeee, this causes a redraw!!
-
-#for current_idx in range(40):
-#  fname = "snapshot%08d.svg" % current_idx
-# plot_cell_scalar()
 print("\nNOTE: click in plot window to give it focus before using keys.")
 
-max_idx = 25
-max_idx = 188
-max_idx = 938
-max_idx = 5761
-max_idx = 1009
-max_idx = 1153
-max_idx = 1440
+max_idx = 5  # debugging
 max_idx = 577
 for idx in range(0,max_idx):
     xml_file_root = "output%08d.xml" % idx
@@ -169,36 +121,44 @@ for idx in range(0,max_idx):
     xml_file = os.path.join('.', xml_file_root)
     mcds = pyMCDS(xml_file_root, microenv=False, graph=False, verbose=False)
     total_min = mcds.get_time()  # warning: can return float that's epsilon from integer value
+    # print("total_min= ",total_min)
     tvals += [total_min]
 
-# for idx in range(0,25):
 for idx in range(0,max_idx):
     current_idx = idx
-    # plot_cell_scalar()
     get_cells_xpos()
 
 # plt.plot(tvals,xpos,'o-', markersize=4)
-plt.plot(tvals,xpos,'-', markersize=4)
-# plt.plot(tvals,xpos/10,'-', markersize=4)  # error - can't do
-# ax0.set_xlim(0.0, 120)
-# ax0.set_xlim(0.0, 60)
-# ax0.set_xlim(600, 950)
-# ax0.set_xlim(625, 950)
-#ax0.set_xlim(693, 5760)  # 4 days
-# ax0.set_xlim(1104, 10080)  # 7 days
-# ax0.set_xlim(1104, 11520)  # 8 days
-# ax0.set_xlim(1787, 14400)  # 10 days
-ax0.set_xlim(0, 5760)
+
+# Scale so a time unit=1 represents 90% relaxation. This will become the cell cycle duration for the monolayer.
+t_90pct = 620.0
+tvals_ = np.array(tvals)   
+xpos_ = np.array(xpos)   
+len_tvals = len(tvals)
+# print("len(tvals)=", len_tvals)
+# print("len(xpos)=",len(xpos))
+# print("tvals_ =",tvals_)
+# print("xpos_ =",xpos_)
+# plt.plot(tvals_/t_90pct, xpos,'-', markersize=4)
+# plt.plot(tvals_/t_90pct, xpos,'-o', markersize=4)
+plt.plot(tvals_/t_90pct, xpos_[:,10],'-', markersize=4)   # only plot the "last" curve (right-most cell)
+
+ax0.set_xlim(0, 5)
 ax0.set_ylim(5, 10)
-# plt.plot([625,950],[90,90],'--k')
-# plt.plot([625,950],[9,9],'--k')  # if scaled to "CD"
-plt.plot([0,5760],[9,9],'--k')  # if scaled to "CD"
-plt.plot([620,620],[0,10],'--k')  # if scaled to "CD"
-ax0.set_xlabel("Time (min)", fontsize=14)
+
+# draw horiz and vertical dashed lines for rightmost cell reaching 90% relaxation width
+plt.plot([0,5],[9,9],'--k')
+plt.plot([1,1],[0,10],'--k')  # if scaled to "CD"
+
+# ax0.set_xlabel("Time (min)", fontsize=14)
+ax0.set_xlabel("Time (relative to 90% width)", fontsize=14)
+
 # ax0.set_ylabel("Cell center (microns)", fontsize=14)
 ax0.set_ylabel("Position (CD)", fontsize=14)
 
-# fig.canvas.mpl_connect('key_press_event', press)
+# title_str = '11 horizontal cells mechanics test (PhysiCell)'
+title_str = '11 horiz cells mechanics test (PhysiCell)'
+ax0.set_title(title_str, fontsize=12)
 
 # keep last plot displayed
 #plt.ioff()
