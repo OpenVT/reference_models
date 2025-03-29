@@ -124,7 +124,7 @@ void create_cell_types( void )
 	   This is a good place to set custom functions. 
 	*/ 
 	
-	cell_defaults.functions.update_phenotype = phenotype_function; 
+	// cell_defaults.functions.update_phenotype = phenotype_function; 
 	// cell_defaults.functions.custom_cell_rule = custom_function; 
 	// cell_defaults.functions.contact_function = contact_function; 
     cell_defaults.functions.cell_division_function = custom_division_function; 
@@ -205,107 +205,34 @@ std::vector<std::string> my_coloring_function( Cell* pCell )
 { return paint_by_number_cell_coloring(pCell); }
 
 void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
-{ 
-    std::cout << __FUNCTION__ << ": " << PhysiCell_globals.current_time << ": cell ID= " << pCell->ID << std::endl;
-
-    double r1 = phenotype.geometry.radius;
-    double sum_chords = 0.0;
-	for( int idx=0; idx<pCell->state.neighbors.size(); idx++ )
-	{
-		Cell* pC = pCell->state.neighbors[idx]; 
-
-        // compute chord of intersection (if any)
-        // radii of cells
-        double r2 = pC->phenotype.geometry.radius;
-        // centers of cells
-        double x1 = (*pCell).position[0];
-        double y1 = (*pCell).position[1];
-        double x2 = (*pC).position[0];
-        double y2 = (*pC).position[1];
-        double xdiff = x1-x2;
-        double ydiff = y1-y2;
-        double d = sqrt(xdiff*xdiff + ydiff*ydiff);
-        if (d < r1+r2)
-        {
-            std::cout << "cell " << pCell->ID << " intersects cell " << pC->ID << std::endl;
-            std::cout << "x1,y1 " << x1 << ", " << y1 << std::endl;
-            std::cout << "x2,y2 " << x2 << ", " << y2 << std::endl;
-            std::cout << "  r1,r2 " << r1 << ", " << r2 << std::endl;
-            // std::cout << "cell " << pCell->ID << " intersects cell " << pC->ID << std::endl;
-
-            double a = (r1*r1 - r2*r2 + d*d) / (2 * d);
-            double h = sqrt(r1*r1 - a*a);
-            double x3 = x1 + a * (x2 - x1) / d;
-            double y3 = y1 + a * (y2 - y1) / d;
-
-            double p1x = x3 + h * (y2 - y1) / d;
-            double p1y = y3 - h * (x2 - x1) / d;
-            double p2x = x3 - h * (y2 - y1) / d;
-            double p2y = y3 + h * (x2 - x1) / d;
-
-            std::cout << "p1= " << p1x <<", "<< p1y << std::endl;
-            std::cout << "p2= " << p2x <<", "<< p2y << std::endl;
-
-            xdiff = p1x-p2x;
-            ydiff = p1y-p2y;
-            d = sqrt(xdiff*xdiff + ydiff*ydiff);
-            std::cout << "dist= " << d << std::endl;
-            sum_chords += d;
-        }
-    }
-    double pct_surface_contact = sum_chords/(6.28319*r1);
-    pCell->custom_data["pct_surface_contact"] = pct_surface_contact;
-    std::cout << "-------- sum_chords = " << sum_chords << ",  pct_surface_contact= " << pct_surface_contact << std::endl;
-    // vs.  -- is this logic really correct - in void Cell::remove_self_from_all_neighbors()
-    // for( int j = 0 ; j < pCell->state.neighbors.size(); j++ )
-	// {
-	//  	Cell* pN = pCell->state.neighbors[j]; 
-    //     auto SearchResult = std::find( 
-    //         pN->state.neighbors.begin(),pN->state.neighbors.end(),pCell );  		
-
-    //     // if pC is indeed found, remove it  
-    //     // erase pC from neighbors 
-    //     if( SearchResult != pN->state.neighbors.end() )
-    //     {
-    //         // if the target is found, set the appropriate rate 
-    //         pN->state.neighbors.erase( SearchResult ); 
-    //     }
-    //     else
-    //     { /* future error message */  }
-	// }
-    return; 
-}
+{ return; }
 
 void custom_function( Cell* pCell, Phenotype& phenotype , double dt )
-{ 
-    std::cout << __FUNCTION__ << ": " << PhysiCell_globals.current_time << ": cell ID= " << pCell->ID << std::endl;
-    return; 
-} 
+{ return; } 
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
 { return; } 
 
-// void double_volume_update_function( Cell* pCell, Phenotype& phenotype , double dt )
-// {
-//     // Warning! Do not use get_total_volume!
-//     // Use (some_cell).phenotype.volume.total instead!
-//     // pCell->set_total_volume( pCell->phenotype.volume.total + pCell->phenotype.volume.total * 0.1);
-//     // if ( get_single_signal( pCell, "pressure" ) < 3.0 )
-//     // {
-//     //     pCell->set_total_volume( pCell->phenotype.volume.total + pCell->phenotype.volume.total * pCell->custom_data["growth_rate"]);
-//     // }
-//     pCell->set_total_volume( pCell->phenotype.volume.total + pCell->phenotype.volume.total * pCell->custom_data["growth_rate"]);
+void double_volume_update_function( Cell* pCell, Phenotype& phenotype , double dt )
+{
+    // Warning! Do not use get_total_volume!
+    // Use (some_cell).phenotype.volume.total instead!
+    // pCell->set_total_volume( pCell->phenotype.volume.total + pCell->phenotype.volume.total * 0.1);
+    // if ( get_single_signal( pCell, "pressure" ) < 3.0 )
+    // {
+    //     pCell->set_total_volume( pCell->phenotype.volume.total + pCell->phenotype.volume.total * pCell->custom_data["growth_rate"]);
+    // }
+    pCell->set_total_volume( pCell->phenotype.volume.total + pCell->phenotype.volume.total * pCell->custom_data["growth_rate"]);
 
-//     // if (pCell->phenotype.volume.total > 1047)    //rwh: hard-coded; fix!
-//     if (pCell->phenotype.volume.total > NormalRandom(2.0, 0.25) * 523.6)    //rwh: hard-coded; fix!
-//     // if (pCell->phenotype.volume.total > NormalRandom(2.0, 1.0) * 523.6)    //rwh: hard-coded; fix!
-//     {
-//         // std::cout << "------- " << __FUNCTION__ << ":  ID= " << pCell->ID <<":  volume.total= " << pCell->phenotype.volume.total << std::endl;
-//         pCell->flag_for_division();
-//     }
-// }
+    // if (pCell->phenotype.volume.total > 1047)    //rwh: hard-coded; fix!
+    if (pCell->phenotype.volume.total > NormalRandom(2.0, 0.25) * 523.6)    //rwh: hard-coded; fix!
+    // if (pCell->phenotype.volume.total > NormalRandom(2.0, 1.0) * 523.6)    //rwh: hard-coded; fix!
+    {
+        // std::cout << "------- " << __FUNCTION__ << ":  ID= " << pCell->ID <<":  volume.total= " << pCell->phenotype.volume.total << std::endl;
+        pCell->flag_for_division();
+    }
+}
 
-// the only reason for this fn is to exit the sim at 10K cells
 void custom_division_function( Cell* pCell1, Cell* pCell2 )
 { 
     static int monolayer_max_cells = 10000;
