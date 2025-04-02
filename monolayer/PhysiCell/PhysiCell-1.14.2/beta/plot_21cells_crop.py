@@ -1,5 +1,5 @@
 # Examples (run from directory containing the .mat files):
-#   - plot (time,xpos) of the right-most cell in the 11-cell mechanics test
+#   - plot (time,xpos) of the right-most cell in the 21-cell mechanics test
 #
 #  At t=0, an immovable "wall" cell is at x=0 and the remaining 10 cells overlap by 1 radius width
 #  so that the right-most cell (ID=10) is at x=50. We let the cells relax (adhesion=0; repulsion varies)
@@ -43,6 +43,7 @@ except:
   raise
 
 # current_idx = 0
+# print("# args=",len(sys.argv)-1)
 nargs = len(sys.argv)-1
 print("# args=",nargs)
 max_idx = 1
@@ -84,26 +85,22 @@ def get_cells_xpos():
     frame = current_idx 
 
     xml_file_root = "output%08d.xml" % frame
-    # print("------ plot_cells_xpos():  current_idx= ",current_idx)
+    # print("plot_cell_scalar():  current_idx= ",current_idx)
     # print("xml_file_root = ",xml_file_root)
     # xml_file = os.path.join('.', xml_file_root)
-    xml_file = os.path.join('output_11cells_symm', xml_file_root)
-    # print("xml_file= ",xml_file)
+    xml_file = os.path.join('output_21cells_symm', xml_file_root)
 
     if not Path(xml_file).is_file():
         print("ERROR: file not found",xml_file)
         return
 
-    # mcds = pyMCDS(xml_file_root, microenv=False, graph=False, verbose=True)
     mcds = pyMCDS(xml_file, microenv=False, graph=False, verbose=False)
     total_min = mcds.get_time()  # warning: can return float that's epsilon from integer value
-    # print("------ plot_cells_xpos():  total_min= ",total_min)
     try:
         df_all_cells = mcds.get_cell_df()
     except:
-        print("plot_cells_xpos(): error performing mcds.get_cell_df()")
-        sys.exit()
-        # return
+        print("vis_tab.py: plot_cell_scalar(): error performing mcds.get_cell_df()")
+        return
         
     xvals = df_all_cells['position_x']
     # print("type(xvals)= ",type(xvals))  # <class 'pandas.core.series.Series'>
@@ -123,23 +120,19 @@ def get_cells_xpos():
 
 print("\nNOTE: click in plot window to give it focus before using keys.")
 
-# max_idx = 577
 # max_idx = 5  # debugging
-# max_idx = 106
-print("\n------------------- 1st loop: get tvals ")
+# max_idx = 577
+# max_idx = 1440
 for idx in range(0,max_idx):
     xml_file_root = "output%08d.xml" % idx
-    # print("---------- xml_file_root = ",xml_file_root)
+    # print("xml_file_root = ",xml_file_root)
     # xml_file = os.path.join('.', xml_file_root)
-    xml_file = os.path.join('output_11cells_symm', xml_file_root)
-    # print("---------- xml_file= ",xml_file)
-    # mcds = pyMCDS(xml_file_root, microenv=False, graph=False, verbose=True)
+    xml_file = os.path.join('output_21cells_symm', xml_file_root)
     mcds = pyMCDS(xml_file, microenv=False, graph=False, verbose=False)
     total_min = mcds.get_time()  # warning: can return float that's epsilon from integer value
     # print("total_min= ",total_min)
     tvals += [total_min]
 
-print("\n------------------- 2nd loop: get xpos ")
 for idx in range(0,max_idx):
     current_idx = idx
     get_cells_xpos()
@@ -147,45 +140,44 @@ for idx in range(0,max_idx):
 # plt.plot(tvals,xpos,'o-', markersize=4)
 
 # Scale so a time unit=1 represents 90% relaxation. This will become the cell cycle duration for the monolayer.
-t_90pct = 620.0
+# t_90pct = 620.0
 t_90pct = 443.0
 tvals_ = np.array(tvals)   
 xpos_ = np.array(xpos)   
 len_tvals = len(tvals)
 # print("len(tvals)=", len_tvals)
-print("len(xpos)=",len(xpos))
+# print("len(xpos)=",len(xpos))
 # print("tvals_ =",tvals_)
-print("xpos_ =",xpos_)
+# print("xpos_ =",xpos_)
 # plt.plot(tvals_/t_90pct, xpos,'-', markersize=4)
 # plt.plot(tvals_/t_90pct, xpos,'-o', markersize=4)
 tv = tvals_/t_90pct
-xv = xpos_[:,10]
-with open("pc_plot_11cells.csv", 'w') as f:
+# xv = xpos_[:,10]
+xv = xpos_[:,20]
+with open("pc_plot_21cells.csv", 'w') as f:
     for idx in range(len(tv)):
         f.write(f'{tv[idx]},{xv[idx]}\n')
 f.close()
-plt.plot(tvals_/t_90pct, xpos_[:,10],'-', markersize=4)   # only plot the "last" curve (right-most cell)
+# plt.plot(tvals_/t_90pct, xpos_[:,20],'-', markersize=4)   # only plot the "last" curve (right-most cell)
+plt.plot(tv,xv,'-', markersize=4)   # only plot the "last" curve (right-most cell)
 
-ax0.set_xlim(0, 5)
+# ax0.set_xlim(0, 5)
 # ax0.set_ylim(5, 10)
-ax0.set_ylim(2.5, 5)
 
 # draw horiz and vertical dashed lines for rightmost cell reaching 90% relaxation width
 # plt.plot([0,5],[9,9],'--k')
 # plt.plot([1,1],[0,10],'--k')  # if scaled to "CD"
-plt.plot([0,5],[4.5,4.5],'--k')
-plt.plot([1,1],[2.5,5],'--k')  # if scaled to "CD"
 
 # ax0.set_xlabel("Time (min)", fontsize=14)
 ax0.set_xlabel("Time (relative to 90% width)", fontsize=14)
 
 # ax0.set_ylabel("Cell center (microns)", fontsize=14)
 # ax0.set_ylabel("Position (CD)", fontsize=14)
-ax0.set_ylabel("Tissue half-width (CD)", fontsize=14)
+ax0.set_ylabel("Tissue width (CD)", fontsize=14)
 
 # title_str = '11 horizontal cells mechanics test (PhysiCell)'
 # title_str = '11 horiz cells mechanics test (PhysiCell)'
-title_str = 'PhysiCell: relaxation test (10 cells)'
+title_str = 'PhysiCell: relaxation test (10+10 cells)'
 ax0.set_title(title_str, fontsize=12)
 
 # keep last plot displayed
