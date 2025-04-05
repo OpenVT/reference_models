@@ -147,7 +147,7 @@ for idx in range(0,max_idx):
 # plt.plot(tvals,xpos,'o-', markersize=4)
 
 # Scale so a time unit=1 represents 90% relaxation. This will become the cell cycle duration for the monolayer.
-t_90pct = 620.0
+# t_90pct = 620.0
 t_90pct = 443.0
 tvals_ = np.array(tvals)   
 xpos_ = np.array(xpos)   

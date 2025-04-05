@@ -165,8 +165,8 @@ f.close()
 # plt.plot(tv,xv,'-', markersize=4)   # only plot the "last" curve (right-most cell)
 plt.plot(tv,tissue_width,'-', markersize=4)   # only plot the "last" curve (right-most cell)
 
-# ax0.set_xlim(0, 5)
-# ax0.set_ylim(5, 10)
+ax0.set_xlim(0, 10)
+# ax0.set_ylim(15, 20)
 
 # draw horiz and vertical dashed lines for rightmost cell reaching 90% relaxation width
 # plt.plot([0,5],[9,9],'--k')
