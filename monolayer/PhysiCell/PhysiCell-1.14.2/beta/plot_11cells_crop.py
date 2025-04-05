@@ -155,37 +155,51 @@ len_tvals = len(tvals)
 # print("len(tvals)=", len_tvals)
 print("len(xpos)=",len(xpos))
 # print("tvals_ =",tvals_)
-print("xpos_ =",xpos_)
+# print("xpos_ =",xpos_)
+# xpos_ = [[-2.5        -2.         -1.5        ...  1.5         2.
+#    2.5       ]
+#  [-2.80161294 -2.12722517 -1.54927079 ...  1.54927079  2.12722517
+#    2.80161294]
+#  [-2.98174944 -2.26149564 -1.63629156 ...  1.63629156  2.26149564
+#    2.98174944]  ...
 # plt.plot(tvals_/t_90pct, xpos,'-', markersize=4)
 # plt.plot(tvals_/t_90pct, xpos,'-o', markersize=4)
 tv = tvals_/t_90pct
-xv = xpos_[:,10]
+# xv_start = xpos_[:,0]
+# print("xv_start =",xv_start)
+xv_end = xpos_[:,10]
+# print("xv_end =",xv_end)
+tissue_width = xpos_[:,10] - xpos_[:,0]
 with open("pc_plot_11cells.csv", 'w') as f:
     for idx in range(len(tv)):
-        f.write(f'{tv[idx]},{xv[idx]}\n')
+        f.write(f'{tv[idx]},{tissue_width[idx]}\n')
 f.close()
-plt.plot(tvals_/t_90pct, xpos_[:,10],'-', markersize=4)   # only plot the "last" curve (right-most cell)
+# print("tissue_width =",tissue_width)
+# plt.plot(tvals_/t_90pct, xpos_[:,10],'-', markersize=4)   # only plot the "last" curve (right-most cell)
+plt.plot(tvals_/t_90pct, tissue_width,'-', markersize=4)   # only plot the "last" curve (right-most cell)
 
 ax0.set_xlim(0, 5)
-# ax0.set_ylim(5, 10)
-ax0.set_ylim(2.5, 5)
+ax0.set_ylim(5, 10)
+# ax0.set_ylim(2.5, 5)
 
 # draw horiz and vertical dashed lines for rightmost cell reaching 90% relaxation width
-# plt.plot([0,5],[9,9],'--k')
-# plt.plot([1,1],[0,10],'--k')  # if scaled to "CD"
-plt.plot([0,5],[4.5,4.5],'--k')
-plt.plot([1,1],[2.5,5],'--k')  # if scaled to "CD"
+plt.plot([0,5],[9,9],'--k')
+plt.plot([1,1],[0,10],'--k')  # if scaled to "CD"
+# plt.plot([0,5],[4.5,4.5],'--k')
+# plt.plot([1,1],[2.5,5],'--k')  # if scaled to "CD"
 
 # ax0.set_xlabel("Time (min)", fontsize=14)
 ax0.set_xlabel("Time (relative to 90% width)", fontsize=14)
 
 # ax0.set_ylabel("Cell center (microns)", fontsize=14)
 # ax0.set_ylabel("Position (CD)", fontsize=14)
-ax0.set_ylabel("Tissue half-width (CD)", fontsize=14)
+# ax0.set_ylabel("Tissue half-width (CD)", fontsize=14)
+ax0.set_ylabel("Tissue width (CD)", fontsize=14)
 
 # title_str = '11 horizontal cells mechanics test (PhysiCell)'
 # title_str = '11 horiz cells mechanics test (PhysiCell)'
-title_str = 'PhysiCell: relaxation test (10 cells)'
+# title_str = 'PhysiCell: relaxation test (10 cells)'
+title_str = 'PhysiCell: 11 compressed cells'
 ax0.set_title(title_str, fontsize=12)
 
 # keep last plot displayed

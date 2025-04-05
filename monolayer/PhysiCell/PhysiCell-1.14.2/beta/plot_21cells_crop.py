@@ -153,13 +153,17 @@ len_tvals = len(tvals)
 # plt.plot(tvals_/t_90pct, xpos,'-o', markersize=4)
 tv = tvals_/t_90pct
 # xv = xpos_[:,10]
-xv = xpos_[:,20]
+# xv = xpos_[:,20]
+tissue_width = xpos_[:,20] - xpos_[:,0]
 with open("pc_plot_21cells.csv", 'w') as f:
-    for idx in range(len(tv)):
-        f.write(f'{tv[idx]},{xv[idx]}\n')
+    # for idx in range(len(tv)):
+    for idx in range(len(tissue_width)):
+        # f.write(f'{tv[idx]},{xv[idx]}\n')
+        f.write(f'{tv[idx]},{tissue_width[idx]}\n')
 f.close()
 # plt.plot(tvals_/t_90pct, xpos_[:,20],'-', markersize=4)   # only plot the "last" curve (right-most cell)
-plt.plot(tv,xv,'-', markersize=4)   # only plot the "last" curve (right-most cell)
+# plt.plot(tv,xv,'-', markersize=4)   # only plot the "last" curve (right-most cell)
+plt.plot(tv,tissue_width,'-', markersize=4)   # only plot the "last" curve (right-most cell)
 
 # ax0.set_xlim(0, 5)
 # ax0.set_ylim(5, 10)
@@ -177,7 +181,7 @@ ax0.set_ylabel("Tissue width (CD)", fontsize=14)
 
 # title_str = '11 horizontal cells mechanics test (PhysiCell)'
 # title_str = '11 horiz cells mechanics test (PhysiCell)'
-title_str = 'PhysiCell: relaxation test (10+10 cells)'
+title_str = 'PhysiCell: relaxation test (11+10 cells)'
 ax0.set_title(title_str, fontsize=12)
 
 # keep last plot displayed
