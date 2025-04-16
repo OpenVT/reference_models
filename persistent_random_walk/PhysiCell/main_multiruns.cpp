@@ -223,13 +223,16 @@ int main( int argc, char* argv[] )
     // num_runs = 2;
 
 	std::ofstream tracks_file("pc_combined_tracks.csv");
-    std::string csv_header = "Time,cellID,x,y";
+    // std::string csv_header = "Time,cellID,x,y";
+    std::string csv_header = "time,id,com_1,com_1,area,surface";
     tracks_file << csv_header << std::endl;
 
+    // double area = 3.141592653589793 * radius*radius;   // = 222.342
+    // double surface = 6.283185307179586 * radius;     // = 52.8586
 	try 
 	{
         int idx_xy = 0;
-        for (int irun=0; irun<num_runs; irun++)
+        for (int irun=1; irun<=num_runs; irun++)
         {
             PhysiCell_globals.current_time = 0.0;   // reset the clock
             std::cout << "\n\n-------------------------- doing irun= " << irun << std::endl;
@@ -295,7 +298,15 @@ int main( int argc, char* argv[] )
                     xvals.push_back(((*all_cells)[0]->position[0]));
                     yvals.push_back(((*all_cells)[0]->position[1]));
 
-                    tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] << std::endl;
+                    // time,id,com_1,com_2,area,surface
+                    // double radius = (*all_cells)[0]->phenotype.geometry.radius ;
+                    // std::cout <<  " (vol 2494)cell radius= "<< radius << std::endl;   // = 8.41271
+                    // double area = 3.141592653589793 * radius*radius;   // = 222.342
+                    // double surface = 6.283185307179586 * radius;     // = 52.8586
+                    // std::cout <<  PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<", area="<< area << ", surface=" << surface << std::endl;
+                    // std::exit(-1);
+
+                    tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<",222.34,52.86" << std::endl;
                 }
 
                 // update the microenvironment
