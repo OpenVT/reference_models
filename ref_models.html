@@ -1,0 +1,36 @@
+<html>
+The OpenVT project is using a small set of "reference models" to 1) compare simulation results of various multicellular modeling frameworks, and 2) provide example models for defining model schemas (from the Framework Capabilities project). The reference models that have received our initial focus include:
+<ul>
+<li>Single cell migration (a.k.a. persistent random walk; a.k.a. biased motility)
+<li>Single cell chemotaxis
+<li>Monolayer growth
+<li>Cell sorting
+<li>Angiogenesis
+</ul>
+
+<h3>Single cell biased motility (a.k.a. persistent random walk)</h3>
+<li>A single cell, starting at the far left of the domain, has a force applied to it in the positive horizontal direction, causing motility. However, the force (and motion) is stochastic with a bias, [0,1] (0=random, 1=perfectly positive horizontal). There is no signaling.</li>
+<img src="images/pc_migration_single_path_bias0_7.png" height="30%">
+<img src="images/pc_migration_bias0_2.png" height="30%">
+<img src="images/pc_migration_bias0_5.png" height="30%">
+<br>
+The first plot shows the path of a single cell with a bias of 0.7 motion. The other two plots show replicates of a simulation with the same bias for each (0.2 and 0.5).
+
+<h3>Single cell chemotaxis</h3>
+<img src="images/chemotaxis_cc3d_substrate.png" height="25%">
+<img src="images/chemotaxis_cc3d_COM.png" height="15%">
+
+<h3>Monolayer growth</h3>
+<li>Starting with a single cell, cell division occurs and subsequent daughter cells simply push away from each other with the default cell-cell repulsion. There is no cell-cell adhesion nor any signaling.</li>
+<img src="images/chaste_monolayer.png" height="30%"><br>
+One experimental paper used for reference, especially for the monolayer growth plot, is <a href="https://doi.org/10.1016/S0006-3495(03)74715-8">Bru, et al (2003)</a>
+
+<h3>Cell sorting</h3>
+<li>Given a random assortment of two cell types, they mix (just random motility, no signaling) and sort into clusters of the same cell type via differential adhesion, i.e., cells of the same type adhere to each other more than cells of opposite types.</li>
+<img src="images/chaste_cellsorting_2017.png" height="60%"><br>
+From <a href="https://doi.org/10.1371/journal.pcbi.1005387">Osborne, et al (2017)</a>
+
+<h3>Angiogenesis</h3>
+<li>This model assumes that cell elongation is a key factor in the formation of stable vascular networks (Merks et al., 2006, doi:)</li>
+<img src="images/angiogen.png" height="50%">
+
