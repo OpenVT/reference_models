@@ -224,7 +224,7 @@ int main( int argc, char* argv[] )
 
 	std::ofstream tracks_file("pc_combined_tracks.csv");
     // std::string csv_header = "Time,cellID,x,y";
-    std::string csv_header = "time,id,com_1,com_1,area,surface";
+    std::string csv_header = "time,id,com_1,com_2,area,surface";
     tracks_file << csv_header << std::endl;
 
     // double area = 3.141592653589793 * radius*radius;   // = 222.342
@@ -232,7 +232,7 @@ int main( int argc, char* argv[] )
 	try 
 	{
         int idx_xy = 0;
-        for (int irun=1; irun<=num_runs; irun++)
+        for (int irun=0; irun<num_runs; irun++)   // does TJ want 0-offset or 1-offset for the run "id"  :/
         {
             PhysiCell_globals.current_time = 0.0;   // reset the clock
             std::cout << "\n\n-------------------------- doing irun= " << irun << std::endl;
