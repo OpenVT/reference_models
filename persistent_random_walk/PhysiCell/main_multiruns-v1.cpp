@@ -95,7 +95,6 @@ int main( int argc, char* argv[] )
 	// int run_num = 1; 
 	char copy_command [1024]; 
     int num_runs = 2;
-    int irun = 0;
 	double migration_bias = 0.9; 
 
     std::cout << "-------- argc= " << argc << std::endl;
@@ -114,9 +113,6 @@ int main( int argc, char* argv[] )
 
 		migration_bias = std::stof(argv[3]); 
         std::cout << "-------- migration_bias= " << migration_bias << std::endl;
-
-		irun = std::stoi(argv[4]); 
-        std::cout << "-------- irun= " << irun << std::endl;
 	}
 	// else
 	// {
@@ -202,7 +198,7 @@ int main( int argc, char* argv[] )
     double max_x = parameters.doubles("max_x");
 	// main loop 
 	
-    // double next_mech_save_time = PhysiCell::mechanics_dt;
+    double next_mech_save_time = PhysiCell::mechanics_dt;
     // double next_mech_save_time = PhysiCell_globals.next_SVG_save_time;
     // double next_mech_save_time = PhysiCell_settings.SVG_save_interval;
 
@@ -229,14 +225,14 @@ int main( int argc, char* argv[] )
 	std::ofstream tracks_file("pc_combined_tracks.csv");
     // std::string csv_header = "Time,cellID,x,y";
     std::string csv_header = "time,id,com_1,com_2,area,surface";
-    // tracks_file << csv_header << std::endl;
+    tracks_file << csv_header << std::endl;
 
     // double area = 3.141592653589793 * radius*radius;   // = 222.342
     // double surface = 6.283185307179586 * radius;     // = 52.8586
 	try 
 	{
         int idx_xy = 0;
-        for (int krun=0; krun<num_runs; krun++)   // does TJ want 0-offset or 1-offset for the run "id"  :/
+        for (int irun=0; irun<num_runs; irun++)   // does TJ want 0-offset or 1-offset for the run "id"  :/
         {
             PhysiCell_globals.current_time = 0.0;   // reset the clock
             std::cout << "\n\n-------------------------- doing irun= " << irun << std::endl;
@@ -246,8 +242,7 @@ int main( int argc, char* argv[] )
             PhysiCell_globals.next_SVG_save_time = PhysiCell_settings.SVG_save_interval;  // from .xml
 
             // ---- Needs to match that below!
-            // next_mech_save_time = PhysiCell::mechanics_dt;
-            // next_mech_save_time = 100;
+            next_mech_save_time = PhysiCell::mechanics_dt;
             // next_mech_save_time = 30.0;
             // next_mech_save_time = PhysiCell_settings.SVG_save_interval;
             (*all_cells)[0]->position[0] = 50.0;
@@ -287,39 +282,32 @@ int main( int argc, char* argv[] )
                         PhysiCell_globals.SVG_output_index++; 
                         PhysiCell_globals.next_SVG_save_time  += PhysiCell_settings.SVG_save_interval;
                     }
-
-                    // std::cout << "------ writing to tracks_file at t= " << PhysiCell_globals.current_time << std::endl;
-                    // xvals.push_back(((*all_cells)[0]->position[0]));
-                    // yvals.push_back(((*all_cells)[0]->position[1]));
-                    tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<",222.34,52.86" << std::endl;
-                    PhysiCell_globals.next_SVG_save_time  += PhysiCell_settings.SVG_save_interval;
                 }
 
                 // rwh: custom for single cell persistence migration
-                // if( fabs( PhysiCell_globals.current_time - next_mech_save_time  ) < 0.01 * diffusion_dt )
-                // {
-                //     // std::cout << "--- x = " << (*all_cells)[0]->position[0] << std::endl;
-                //     next_mech_save_time  += PhysiCell::mechanics_dt;
-                //     // next_mech_save_time  += 100;
-                //     // next_mech_save_time  += PhysiCell_settings.SVG_save_interval;
-                //     // next_mech_save_time  += PhysiCell_globals.next_SVG_save_time;
-                //     // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << std::endl;
+                if( fabs( PhysiCell_globals.current_time - next_mech_save_time  ) < 0.01 * diffusion_dt )
+                {
+                    // std::cout << "--- x = " << (*all_cells)[0]->position[0] << std::endl;
+                    next_mech_save_time  += PhysiCell::mechanics_dt;
+                    // next_mech_save_time  += PhysiCell_settings.SVG_save_interval;
+                    // next_mech_save_time  += PhysiCell_globals.next_SVG_save_time;
+                    // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << std::endl;
 
-                //     idx_xy++;
-                //     // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
-                //     xvals.push_back(((*all_cells)[0]->position[0]));
-                //     yvals.push_back(((*all_cells)[0]->position[1]));
+                    idx_xy++;
+                    // std::cout << "main: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
+                    xvals.push_back(((*all_cells)[0]->position[0]));
+                    yvals.push_back(((*all_cells)[0]->position[1]));
 
-                //     // time,id,com_1,com_2,area,surface
-                //     // double radius = (*all_cells)[0]->phenotype.geometry.radius ;
-                //     // std::cout <<  " (vol 2494)cell radius= "<< radius << std::endl;   // = 8.41271
-                //     // double area = 3.141592653589793 * radius*radius;   // = 222.342
-                //     // double surface = 6.283185307179586 * radius;     // = 52.8586
-                //     // std::cout <<  PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<", area="<< area << ", surface=" << surface << std::endl;
-                //     // std::exit(-1);
+                    // time,id,com_1,com_2,area,surface
+                    // double radius = (*all_cells)[0]->phenotype.geometry.radius ;
+                    // std::cout <<  " (vol 2494)cell radius= "<< radius << std::endl;   // = 8.41271
+                    // double area = 3.141592653589793 * radius*radius;   // = 222.342
+                    // double surface = 6.283185307179586 * radius;     // = 52.8586
+                    // std::cout <<  PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<", area="<< area << ", surface=" << surface << std::endl;
+                    // std::exit(-1);
 
-                //     tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<",222.34,52.86" << std::endl;
-                // }
+                    tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<",222.34,52.86" << std::endl;
+                }
 
                 // update the microenvironment
                 // microenvironment.simulate_diffusion_decay( diffusion_dt );  //rwh
@@ -333,54 +321,54 @@ int main( int argc, char* argv[] )
                 
                 PhysiCell_globals.current_time += diffusion_dt;
 
-                // if ((*all_cells)[0]->position[0] > max_x)
-                // {
-                //     // exit(-1);
-                //     // std::cout << (*all_cells)[0]->position[0] << " > max_x =" <<max_x<< " ; break!!!\n";
-                //     xvals.push_back(-99.0);
-                //     yvals.push_back(-99.0);
-                //     // std::cout << "main -- insert -99s: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
+                if ((*all_cells)[0]->position[0] > max_x)
+                {
+                    // exit(-1);
+                    // std::cout << (*all_cells)[0]->position[0] << " > max_x =" <<max_x<< " ; break!!!\n";
+                    xvals.push_back(-99.0);
+                    yvals.push_back(-99.0);
+                    // std::cout << "main -- insert -99s: t="<<PhysiCell_globals.current_time <<" : x= "<< ((*all_cells)[0]->position[0])<<", y= "<<((*all_cells)[0]->position[1]) << ", idx_xy= " << idx_xy << std::endl;
 
-                //     (*all_cells)[0]->get_container()->last_mechanics_time = 0.0;
+                    (*all_cells)[0]->get_container()->last_mechanics_time = 0.0;
 
-                //     break;
-                // }
+                    break;
+                }
             }
 		}   // end irun loop
 
         tracks_file.close();
 
-        // xvals.push_back(PhysiCell_globals.current_time);
-        // yvals.push_back(PhysiCell_globals.current_time);
+        xvals.push_back(PhysiCell_globals.current_time);
+        yvals.push_back(PhysiCell_globals.current_time);
         std::cout << "main.cpp: -------- final time= " << PhysiCell_globals.current_time << std::endl; 
 
-        // xvals.push_back(-99.0);
-        // yvals.push_back(-99.0);
+        xvals.push_back(-99.0);
+        yvals.push_back(-99.0);
 
         // ------ rwh ----------
         // int size_of_each_datum = 8;
-        // int ncols = 2;
-        // // int number_of_data_entries = xvals.size();  
-        // int nrows = xvals.size();  
-        // std::cout << "main.cpp: -------- nrows (for .mat) = " << nrows << std::endl; 
-        // FILE* fp = write_matlab_header( nrows, ncols,  path_filename, "cell_pos" );  
-        // if( fp == NULL )
-        // { 
-        //     std::cout << std::endl << "main.cpp: Error: Failed to open " << filename << " for MAT writing." << std::endl << std::endl; 
+        int ncols = 2;
+        // int number_of_data_entries = xvals.size();  
+        int nrows = xvals.size();  
+        std::cout << "main.cpp: -------- nrows (for .mat) = " << nrows << std::endl; 
+        FILE* fp = write_matlab_header( nrows, ncols,  path_filename, "cell_pos" );  
+        if( fp == NULL )
+        { 
+            std::cout << std::endl << "main.cpp: Error: Failed to open " << filename << " for MAT writing." << std::endl << std::endl; 
 
-        //     std::cout << std::endl << "Error: We're not writing data like we expect. " << std::endl
-        //     << "Check to make sure your save directory exists. " << std::endl << std::endl
-        //     << "I'm going to exit with a crash code of -1 now until " << std::endl 
-        //     << "you fix your directory. Sorry!" << std::endl << std::endl; 
-        //     exit(-1); 
-        // } 
-        // // std::fwrite( (char*)&xvals[0], sizeof(double), xvals.size() , fp ); 
-        // // std::fwrite( (char*)&yvals[0], sizeof(double), yvals.size() , fp ); 
-        // // std::fwrite( xvals.data(), sizeof(double), xvals.size() , fp ); 
-        // // std::fwrite( yvals.data(), sizeof(double), yvals.size() , fp ); 
-        // std::fwrite( xvals.data(), sizeof(char), 8*xvals.size() , fp ); 
-        // std::fwrite( yvals.data(), sizeof(char), 8*yvals.size() , fp ); 
-        // std::fclose(fp); 
+            std::cout << std::endl << "Error: We're not writing data like we expect. " << std::endl
+            << "Check to make sure your save directory exists. " << std::endl << std::endl
+            << "I'm going to exit with a crash code of -1 now until " << std::endl 
+            << "you fix your directory. Sorry!" << std::endl << std::endl; 
+            exit(-1); 
+        } 
+        // std::fwrite( (char*)&xvals[0], sizeof(double), xvals.size() , fp ); 
+        // std::fwrite( (char*)&yvals[0], sizeof(double), yvals.size() , fp ); 
+        // std::fwrite( xvals.data(), sizeof(double), xvals.size() , fp ); 
+        // std::fwrite( yvals.data(), sizeof(double), yvals.size() , fp ); 
+        std::fwrite( xvals.data(), sizeof(char), 8*xvals.size() , fp ); 
+        std::fwrite( yvals.data(), sizeof(char), 8*yvals.size() , fp ); 
+        std::fclose(fp); 
 		
 
 

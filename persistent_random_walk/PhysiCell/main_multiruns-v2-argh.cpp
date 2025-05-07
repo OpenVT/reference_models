@@ -95,7 +95,6 @@ int main( int argc, char* argv[] )
 	// int run_num = 1; 
 	char copy_command [1024]; 
     int num_runs = 2;
-    int irun = 0;
 	double migration_bias = 0.9; 
 
     std::cout << "-------- argc= " << argc << std::endl;
@@ -114,9 +113,6 @@ int main( int argc, char* argv[] )
 
 		migration_bias = std::stof(argv[3]); 
         std::cout << "-------- migration_bias= " << migration_bias << std::endl;
-
-		irun = std::stoi(argv[4]); 
-        std::cout << "-------- irun= " << irun << std::endl;
 	}
 	// else
 	// {
@@ -229,14 +225,14 @@ int main( int argc, char* argv[] )
 	std::ofstream tracks_file("pc_combined_tracks.csv");
     // std::string csv_header = "Time,cellID,x,y";
     std::string csv_header = "time,id,com_1,com_2,area,surface";
-    // tracks_file << csv_header << std::endl;
+    tracks_file << csv_header << std::endl;
 
     // double area = 3.141592653589793 * radius*radius;   // = 222.342
     // double surface = 6.283185307179586 * radius;     // = 52.8586
 	try 
 	{
         int idx_xy = 0;
-        for (int krun=0; krun<num_runs; krun++)   // does TJ want 0-offset or 1-offset for the run "id"  :/
+        for (int irun=0; irun<num_runs; irun++)   // does TJ want 0-offset or 1-offset for the run "id"  :/
         {
             PhysiCell_globals.current_time = 0.0;   // reset the clock
             std::cout << "\n\n-------------------------- doing irun= " << irun << std::endl;
