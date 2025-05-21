@@ -1,0 +1,3 @@
+ctype1,contact with wall,increases,transform to ctype2,1,1,4,0
+wall,contact with ctype1,increases,transform to wall2,1,1,4,0
+wall,contact with ctype2,increases,transform to wall2,1,1,4,0

@@ -1,0 +1,2 @@
+ctype1,contact with wall,increases,cell-cell repulsion,20.,1,4,0
+wall,contact with ctype1,increases,apoptosis,0.001,1,4,0
