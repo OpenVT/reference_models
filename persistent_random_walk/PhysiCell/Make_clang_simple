@@ -1,0 +1,35 @@
+# assumes you've done: "brew install libomp"
+
+# VERSION := $(shell grep . VERSION.txt | cut -f1 -d:)
+PROGRAM_NAME := simple_clang_debug
+
+# If using MacOS system clang++, PLUS the "-Xpreprocessor -fopenmp"
+CC := clang++
+
+
+#ARCH := native # best auto-tuning
+ARCH := arm64
+#ARCH := arm
+
+#OMP_ROOT := /opt/homebrew/Cellar/libomp/17.0.6
+OMP_ROOT := /opt/homebrew/opt/libomp
+
+# May 2024:  brew install libomp
+#  export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
+#  export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
+
+# using x86_64 brew and libomp install!
+CFLAGS :=  -g -fomit-frame-pointer -Xpreprocessor -fopenmp -m64 -std=c++11 -I/opt/homebrew/opt/libomp/include
+
+PATH_TO_OMP := -L/opt/homebrew/opt/libomp/lib
+
+COMPILE_COMMAND := $(CC) $(CFLAGS) 
+
+
+all: simple_motility.cpp $(ALL_OBJECTS)
+	$(COMPILE_COMMAND) $(PATH_TO_OMP) -lomp -o $(PROGRAM_NAME) $(ALL_OBJECTS) simple_motility.cpp
+
+name:
+	@echo ""
+	@echo "Executable name is" $(PROGRAM_NAME)
+	@echo ""
