@@ -226,8 +226,7 @@ int main( int argc, char* argv[] )
     // int num_runs = 8;
     // num_runs = 2;
 
-	// std::ofstream tracks_file("pc_combined_tracks.csv");
-	std::ofstream tracks_file("pc_combined_tracks_random_at_origin.csv");
+	std::ofstream tracks_file("pc_combined_tracks.csv");
     // std::string csv_header = "Time,cellID,x,y";
     std::string csv_header = "time,id,com_1,com_2,area,surface";
     // tracks_file << csv_header << std::endl;
