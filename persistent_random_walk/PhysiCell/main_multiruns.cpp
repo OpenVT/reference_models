@@ -229,7 +229,8 @@ int main( int argc, char* argv[] )
 	// std::ofstream tracks_file("pc_combined_tracks.csv");
 	std::ofstream tracks_file("pc_combined_tracks_random_at_origin.csv");
     // std::string csv_header = "Time,cellID,x,y";
-    std::string csv_header = "time,id,com_1,com_2,area,surface";
+    // std::string csv_header = "time,id,com_1,com_2,area,surface";
+    std::string csv_header = "time,id,com_1,com_2";   // match Dom's Chaste .csv
     // tracks_file << csv_header << std::endl;
 
     // double area = 3.141592653589793 * radius*radius;   // = 222.342
@@ -254,6 +255,8 @@ int main( int argc, char* argv[] )
             (*all_cells)[0]->position[0] = 50.0;
             (*all_cells)[0]->position[1] = 50.0;
                 std::cout << "    reset cell pos= " << (*all_cells)[0]->position[0] << ", " << (*all_cells)[0]->position[1] << std::endl;
+
+            tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] << std::endl;
 
             while( PhysiCell_globals.current_time < PhysiCell_settings.max_time + 0.1*diffusion_dt )
             {
@@ -292,7 +295,9 @@ int main( int argc, char* argv[] )
                     // std::cout << "------ writing to tracks_file at t= " << PhysiCell_globals.current_time << std::endl;
                     // xvals.push_back(((*all_cells)[0]->position[0]));
                     // yvals.push_back(((*all_cells)[0]->position[1]));
-                    tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<",222.34,52.86" << std::endl;
+
+                    // tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] <<",222.34,52.86" << std::endl;
+                    tracks_file << PhysiCell_globals.current_time <<","<< irun<<"," << (*all_cells)[0]->position[0] <<","<< (*all_cells)[0]->position[1] << std::endl;
                     PhysiCell_globals.next_SVG_save_time  += PhysiCell_settings.SVG_save_interval;
                 }
 
